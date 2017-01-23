@@ -98,11 +98,24 @@ public class DownloadRepoService extends Service {
                         .setFilterById(id);
                 cursor = manager.query(baseQuery);
                 final int statusColumnId = cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS);
-                final int localFilenameColumnId = cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_FILENAME);
+                //final int localFilenameColumnId = cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_FILENAME);
+                final int localFilenameColumnId = cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI);
+
+
                 final int descName = cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_DESCRIPTION);
                 if (cursor.moveToNext()) {
                     final long status = cursor.getLong(statusColumnId);
-                    final String path = cursor.getString(localFilenameColumnId);
+                    //final String path = cursor.getString(localFilenameColumnId);
+                    String path="";
+                    String cursorString = cursor.getString(localFilenameColumnId);
+                     if (cursorString != null) {
+                        // Logger.debug(TAG, LOG_FEATURE_DOWNLOAD, "                     [ cursor.getString(filenameIndex) ] = " + cursor.getString(filenameIndex));
+                         Uri uri = Uri.parse(cursorString);
+                         if (uri != null) {
+                             path = uri.getPath();
+                        }
+                    }
+
                     final String name = cursor.getString(descName);
                     if (status == DownloadManager.STATUS_SUCCESSFUL) {
                         File zipFile = new File(path);
